@@ -1,0 +1,232 @@
+[
+  {
+    "id": "case-01-burnout-explicit",
+    "description": "User names burnout directly after describing months of unsustainable hours.",
+    "transcript": [
+      { "role": "assistant", "content": "How did today go for you?" },
+      { "role": "user", "content": "Another 12-hour day. I honestly don't remember what it felt like to leave at a normal time." },
+      { "role": "assistant", "content": "That sounds exhausting. How long has it been like this?" },
+      { "role": "user", "content": "About six months. I keep telling myself it'll slow down but it never does. I'm burned out, plain and simple." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "burnout", "min_intensity": "mid" }],
+      "may_include": [{ "label": "frustration" }],
+      "must_not_include": ["shame", "anger", "jealousy", "envy"]
+    }
+  },
+  {
+    "id": "case-02-burnout-implicit",
+    "description": "User describes long hours and weekend work; never names the emotion.",
+    "transcript": [
+      { "role": "assistant", "content": "How was your day?" },
+      { "role": "user", "content": "Long. I've been at the office until 9 every night this week and worked both Saturday and Sunday. My partner stopped asking when I'd be home." },
+      { "role": "assistant", "content": "That's a lot of hours stacked together. How are you holding up?" },
+      { "role": "user", "content": "Honestly I don't know anymore. I just keep going because if I stop I think I'll fall apart." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "burnout", "min_intensity": "mid" }],
+      "may_include": [{ "label": "anxiety" }],
+      "must_not_include": ["anger", "shame", "envy", "jealousy"]
+    }
+  },
+  {
+    "id": "case-03-anxiety-health",
+    "description": "User waiting for medical test results; fear is present but never named.",
+    "transcript": [
+      { "role": "assistant", "content": "How's your day been?" },
+      { "role": "user", "content": "Pretty hard to concentrate. I got some bloodwork done last week and still haven't heard back. The doctor said she'd call within five days." },
+      { "role": "assistant", "content": "That waiting sounds really difficult. What's going through your mind?" },
+      { "role": "user", "content": "I keep refreshing my patient portal. Every time I sit down to work I start running through worst-case scenarios. It's exhausting." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "anxiety", "min_intensity": "mid" }],
+      "may_include": [{ "label": "sadness" }],
+      "must_not_include": ["anger", "resentment", "envy", "jealousy"]
+    }
+  },
+  {
+    "id": "case-04-anxiety-implicit",
+    "description": "Vague workplace unease after a reorg announcement; user never says anxious.",
+    "transcript": [
+      { "role": "assistant", "content": "Tell me a bit about your day." },
+      { "role": "user", "content": "Fine on paper but I can't shake this feeling. Our company announced a reorg is coming and nobody knows what it means yet." },
+      { "role": "assistant", "content": "That uncertainty sounds unsettling. How is it affecting you day to day?" },
+      { "role": "user", "content": "I haven't been sleeping well. I keep checking Slack at midnight in case something gets posted. I don't even know what I'm looking for." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "anxiety", "min_intensity": "low" }],
+      "may_include": [{ "label": "burnout" }],
+      "must_not_include": ["anger", "shame", "jealousy", "envy"]
+    }
+  },
+  {
+    "id": "case-05-frustration-blocked",
+    "description": "User blocked by a broken deployment pipeline all day; clearly frustrated but measured.",
+    "transcript": [
+      { "role": "assistant", "content": "How did your day go?" },
+      { "role": "user", "content": "I spent four hours trying to get our deployment pipeline to run. A dependency update broke everything and nobody told the team." },
+      { "role": "assistant", "content": "That sounds incredibly frustrating. Did you manage to fix it?" },
+      { "role": "user", "content": "Eventually yes, but I got nothing else done. This is the third time this month something like this has derailed my actual work. I'm so tired of fighting the tools instead of building things." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "frustration", "min_intensity": "mid" }],
+      "may_include": [{ "label": "burnout" }],
+      "must_not_include": ["shame", "sadness", "jealousy", "loneliness"]
+    }
+  },
+  {
+    "id": "case-06-sadness-loss",
+    "description": "User's dog of fourteen years had to be put down; grief is vivid and sustained.",
+    "transcript": [
+      { "role": "assistant", "content": "How's your day been?" },
+      { "role": "user", "content": "Really hard. We had to put our dog down this morning. He'd been with us for fourteen years." },
+      { "role": "assistant", "content": "I'm so sorry. Fourteen years is a long time together. How are you feeling right now?" },
+      { "role": "user", "content": "I keep walking past his bed and forgetting he's gone for a second, and then remembering. The house feels wrong without him. I couldn't eat today." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "sadness", "min_intensity": "high" }],
+      "may_include": [{ "label": "disappointment" }],
+      "must_not_include": ["anger", "frustration", "envy", "jealousy"]
+    }
+  },
+  {
+    "id": "case-07-shame-public",
+    "description": "User cut across a junior colleague mid-presentation; guilt is lingering.",
+    "transcript": [
+      { "role": "assistant", "content": "How did your day go?" },
+      { "role": "user", "content": "I said something in a meeting I immediately regretted. A junior colleague was presenting and I interrupted to make a point. I could see her face fall." },
+      { "role": "assistant", "content": "That sounds like it's been sitting with you. What was going through your mind afterwards?" },
+      { "role": "user", "content": "I apologized privately but I still feel terrible. I pride myself on being a good teammate and I behaved exactly like the kind of person I hate working with. I keep replaying it." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "shame", "min_intensity": "mid" }],
+      "may_include": [{ "label": "anxiety" }],
+      "must_not_include": ["anger", "resentment", "burnout", "envy"]
+    }
+  },
+  {
+    "id": "case-08-resentment-chronic",
+    "description": "User's work credit has been misattributed to a colleague three times this year.",
+    "transcript": [
+      { "role": "assistant", "content": "Tell me how today was." },
+      { "role": "user", "content": "My manager praised my colleague in the all-hands for work I led. It's the third time this year something like that has happened." },
+      { "role": "assistant", "content": "Three times sounds like more than a coincidence. How are you carrying that?" },
+      { "role": "user", "content": "I've started to just expect it. There's this bitterness I can feel whenever I'm about to share something I worked hard on — like I already know it won't count. I'm tired of it." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "resentment", "min_intensity": "mid" }],
+      "may_include": [{ "label": "disappointment" }, { "label": "anger" }],
+      "must_not_include": ["anxiety", "shame", "loneliness", "jealousy"]
+    }
+  },
+  {
+    "id": "case-09-anger-betrayal",
+    "description": "Business partner sent a contract behind the user's back; anger is explicit and high.",
+    "transcript": [
+      { "role": "assistant", "content": "How was your day?" },
+      { "role": "user", "content": "My business partner sent a contract to a client behind my back, with a scope we'd explicitly agreed not to offer. I found out from the client." },
+      { "role": "assistant", "content": "That sounds like a serious breach of trust. What happened when you raised it?" },
+      { "role": "user", "content": "He acted like it wasn't a big deal. I'm furious. Not just about this — about the pattern of him going around me whenever he thinks I'll say no." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "anger", "min_intensity": "high" }],
+      "may_include": [{ "label": "resentment" }, { "label": "frustration" }],
+      "must_not_include": ["sadness", "shame", "envy", "loneliness"]
+    }
+  },
+  {
+    "id": "case-10-disappointment-shelved",
+    "description": "A three-month initiative the user championed was shelved with a two-line email.",
+    "transcript": [
+      { "role": "assistant", "content": "How has your day been?" },
+      { "role": "user", "content": "I found out the initiative I'd been building the case for over three months was shelved. No explanation, no meeting, just an email saying it wasn't moving forward." },
+      { "role": "assistant", "content": "That must sting after putting in that much work. What did the proposal mean to you?" },
+      { "role": "user", "content": "It was supposed to change how our team handles onboarding. I genuinely believed it would help people. Getting a two-line email was deflating. I just feel let down." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "disappointment", "min_intensity": "mid" }],
+      "may_include": [{ "label": "sadness" }, { "label": "frustration" }],
+      "must_not_include": ["anger", "resentment", "shame", "envy"]
+    }
+  },
+  {
+    "id": "case-11-envy-career",
+    "description": "User notices a peer's rapid promotion and struggles to suppress the comparison.",
+    "transcript": [
+      { "role": "assistant", "content": "How was your day?" },
+      { "role": "user", "content": "I saw that someone I went to university with just became a VP at 31. We started in similar roles." },
+      { "role": "assistant", "content": "How did that land for you?" },
+      { "role": "user", "content": "Honestly? It stings. I know I shouldn't compare but I can't help it. I look at where I am and feel like I've been standing still. I want what she has." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "envy", "min_intensity": "low" }],
+      "may_include": [{ "label": "disappointment" }],
+      "must_not_include": ["anger", "shame", "anxiety", "jealousy"]
+    }
+  },
+  {
+    "id": "case-12-loneliness-relocation",
+    "description": "User relocated to a new city three months ago and has no social circle yet.",
+    "transcript": [
+      { "role": "assistant", "content": "Tell me how your day went." },
+      { "role": "user", "content": "I moved to Berlin three months ago for work. I still don't know anyone here outside the office. Today after work I just went home and ate alone again." },
+      { "role": "assistant", "content": "That sounds really isolating. How are you holding up with it?" },
+      { "role": "user", "content": "I talk to friends back home on video calls but it's not the same. Sometimes I go whole weekends without a real conversation. I miss just being around people who know me." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "loneliness", "min_intensity": "mid" }],
+      "may_include": [{ "label": "sadness" }],
+      "must_not_include": ["anger", "frustration", "resentment", "envy"]
+    }
+  },
+  {
+    "id": "case-13-jealousy-partner",
+    "description": "User unsettled by a close new friendship their partner has formed; never names the feeling.",
+    "transcript": [
+      { "role": "assistant", "content": "How are you doing today?" },
+      { "role": "user", "content": "A bit unsettled. My partner has been spending a lot of time with someone from his new job. He talks about her constantly." },
+      { "role": "assistant", "content": "How are you feeling about that?" },
+      { "role": "user", "content": "I trust him, I do. But there's this tight feeling in my chest whenever her name comes up. I hate that I feel like this. I can't tell if I'm being irrational or if something's off." }
+    ],
+    "expected": {
+      "must_include": [{ "label": "jealousy", "min_intensity": "low" }],
+      "may_include": [{ "label": "anxiety" }],
+      "must_not_include": ["anger", "shame", "resentment", "envy"]
+    }
+  },
+  {
+    "id": "case-14-positive",
+    "description": "User shipped a long-running feature and received genuine appreciation; no negative emotions expected.",
+    "transcript": [
+      { "role": "assistant", "content": "How was your day?" },
+      { "role": "user", "content": "Really good actually. I finally shipped a feature that's been in progress for two months and the feedback from the team was great." },
+      { "role": "assistant", "content": "That sounds satisfying. What made this one feel meaningful to ship?" },
+      { "role": "user", "content": "It's something I came up with myself and pushed to get prioritized. Seeing it in production and getting messages from colleagues saying it made their workflow easier — that felt worth it." }
+    ],
+    "expected": {
+      "must_include": [],
+      "may_include": [],
+      "must_not_include": ["sadness", "anxiety", "frustration", "anger", "burnout", "shame", "resentment", "disappointment", "envy", "loneliness", "jealousy"]
+    }
+  },
+  {
+    "id": "case-15-multi-emotion",
+    "description": "Father hospitalized; sibling absent as always. Sadness and resentment coexist across several turns.",
+    "transcript": [
+      { "role": "assistant", "content": "How's your day been?" },
+      { "role": "user", "content": "Not great. My dad is in hospital. They think it might be a minor stroke but we won't know more until tomorrow." },
+      { "role": "assistant", "content": "That's really frightening. How are you doing with it?" },
+      { "role": "user", "content": "I'm scared and sad and I keep checking my phone. My brother hasn't even called. He lives twenty minutes from the hospital and I'm the one flying in from abroad. It's always me." },
+      { "role": "assistant", "content": "That gap in responsibility sounds really hard on top of everything else. Does your brother know how serious it is?" },
+      { "role": "user", "content": "He knows. This is just who he is. I love him but I've been carrying our family stuff alone for years and I'm exhausted by it." }
+    ],
+    "expected": {
+      "must_include": [
+        { "label": "sadness", "min_intensity": "mid" },
+        { "label": "resentment", "min_intensity": "mid" }
+      ],
+      "may_include": [{ "label": "anxiety" }, { "label": "disappointment" }, { "label": "burnout" }],
+      "must_not_include": ["envy", "jealousy", "shame"]
+    }
+  }
+]
