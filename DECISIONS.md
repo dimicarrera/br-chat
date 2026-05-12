@@ -278,5 +278,4 @@ None currently.
 
 ## Future tasks
 
-- Add HTA in prod to drastically limit token overconsumption by attackers.
 - Run a proper code review

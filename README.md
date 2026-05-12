@@ -22,8 +22,8 @@ Open `.env.local` and fill in the four required secrets:
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...
-UPSTASH_REDIS_REST_URL=https://...upstash.io
-UPSTASH_REDIS_REST_TOKEN=...
+KV_REST_API_URL=https://...upstash.io
+KV_REST_API_TOKEN=...
 ```
 
 The remaining variables have sensible defaults (`MODEL_CHAT`, `MODEL_EXTRACT`, `MAX_ASSISTANT_TURNS`, etc.) and don't need to be changed to run locally.
