@@ -4,7 +4,6 @@ export function middleware(request: NextRequest) {
   const user = process.env.BASIC_AUTH_USER;
   const password = process.env.BASIC_AUTH_PASSWORD;
 
-  // Auth is opt-in — skip if credentials are not configured (e.g. local dev)
   if (!user || !password) {
     return NextResponse.next();
   }
