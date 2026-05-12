@@ -1,7 +1,6 @@
 # Decisions
 
-Running log of decisions made while building this project.
-Every entry is dated and immutable once marked `Decided` — if I reverse a decision, I add a new entry that supersedes the old one rather than rewriting history.
+Running log of decisions made while building this project. Every entry is immutable once marked `Decided` — if I reverse a decision, I add a new entry that supersedes the old one rather than rewriting history.
 
 ## Conventions
 
@@ -18,9 +17,9 @@ Every entry is dated and immutable once marked `Decided` — if I reverse a deci
 
 **Context**. The case study brief doesn't define "negative emotion" and says outright there's no correct answer. The emotion extractor needs one. If I don't pin a definition down, the model picks one for me, and when asked I won't be able to explain why I shipped what I shipped.
 
-**Decision**. I need to define a list of labels that show up in conversation recaps: `sadness`, `anxiety`, `frustration`, `shame`, `resentment`, `disappointment`, `anger`, `burnout`, `envy`, `loneliness`, `jealousy`. Each gets a one-line operational definition. The list lives in `lib/prompts/emotions.ts` and is reused verbatim in the extraction prompt and in the result UI as a single source of truth.
+**Decision**. The system uses a fixed list of 11 labels that show up in conversation recaps: `sadness`, `anxiety`, `frustration`, `shame`, `resentment`, `disappointment`, `anger`, `burnout`, `envy`, `loneliness`, `jealousy`. Each has a one-line operational definition. The list lives in `lib/prompts/emotions.ts` and is reused verbatim in the extraction prompt and in the result UI as a single source of truth.
 
-**Why**. Academic definitions are way too complicated to study and implement in the context of this app and the time constraints force me to look for a simpler solution. I need a label system with clean coverage for things like "I'm tired of pretending I'm fine" or "my boss still hasn't replied" which is what a day-recap actually sounds like. A short list is also small enough to drop into a tool-use enum and also small enough for the model to use without drift. Reusing the same definitions in the UI means the user, the prompt, and I as a developer are all looking at the same words.
+**Why**. Academic taxonomies didn't fit this conversation shape. Ekman is calibrated to facial recognition, Plutchik to evolutionary categories. Neither has clean coverage for things like "I'm tired of pretending I'm fine" or "my boss still hasn't replied" — which is what a day-recap actually sounds like. A short prose-defined list is also small enough to drop into a tool-use enum and small enough for the model to use without drift. Reusing the same definitions in the UI means the user, the prompt, and I as a developer are all looking at the same words.
 
 **Rejected alternatives**.
 
@@ -28,7 +27,7 @@ Every entry is dated and immutable once marked `Decided` — if I reverse a deci
 - _Full Plutchik wheel._ Too many labels, too much overlap, every label becomes a separate argument to win on the call.
 - _Let the model emit free-form labels._ Hands the definition problem back to the model. That's exactly what the brief is testing against.
 
-**What this costs us**. Anything outside the list becomes invisible.
+**What this costs us**. The list leans Western and work/relationships-shaped. Some affective states are still missing — guilt, regret, grief, and mixed or ambivalent feelings — and would surface as either the wrong label or an empty result. A non-English or cross-cultural version would need a rewrite of both the list and the definitions.
 
 **Revisit when**. The eval set surfaces something real that doesn't fit any current label.
 
@@ -42,7 +41,7 @@ Every entry is dated and immutable once marked `Decided` — if I reverse a deci
 
 **Decision**. One extraction pass over the full chat transcript, triggered when the user clicks "End conversation" or hits the turn cap.
 
-**Why**. Per-message emotion extraction multiplies the model bill by the number of turns and adds latency to every reply. The brief explicitly warns again burning credits, so that path is hard to justify.
+**Why**. Per-message emotion extraction multiplies the model bill by the number of turns and adds latency to every reply. The brief explicitly warns against burning credits, so that path is hard to justify.
 
 More importantly, negative emotions in a recap usually only become visible across several messages. A single turn rarely carries enough context, for example when someone says "fine" three times before they say what's actually wrong. An end-of-session pass hands the model the full thing at once, which is the shape this problem actually wants.
 
@@ -70,25 +69,30 @@ More importantly, negative emotions in a recap usually only become visible acros
 - _Vite + React + FastAPI on Fly.io or Railway._ Would have used more of my Python background and would probably be the right call on a longer project. On two days it's the wrong call.
 - _SPA + serverless Python functions._ Same language split, same operational tax, no real upside.
 
-**What this costs us**. This approach would showcase less direct coding experience than Brainapptica might want to see. Since I'm not being evaluated as a coder per se, I don't think this is relevant anyway. 
-
 ---
 
-## D-04 — Extraction prompt receives just user messages
+## D-04 — Extraction prompt receives only user messages, not the full transcript
 
 **Status**: Decided
 
-**Context**. The extraction prompt could be handed the entire conversation (user + assistant turns) or only the user messages. Both are defensible. The question is whether assistant text contaminates the label output.
+**Context**. The extraction prompt could be handed the entire conversation (user + assistant turns) or only the user messages. Both are defensible. The question is whether assistant text adds useful context or contaminates the label output.
 
-**Decision**. Don't pass the full transcript.
+**Decision**. Pass only the user-side messages to the extractor.
 
-**Why**. Contamination risk is real and token costs double. Only evaluate what user says. 
+**Why**. Three reasons stacked.
+
+First, the `evidenceQuote` schema only accepts substrings of user messages (validated in `lib/llm/extract.ts`). Assistant text can never become evidence under the system's own contract, so feeding it in serves no extraction purpose — only framing context.
+
+Second, the assistant's text is generated under _my_ system prompt. Feeding it back into the extractor creates a closed loop where the model is, in effect, partly analyzing its own framing. If the chat prompt is ever changed (different tone, different question style), the extractor's input changes for reasons unrelated to the user's emotional state.
+
+Third, context that mattered from the assistant side is already reflected in user replies — people answer in terms shaped by the question asked. The signal is captured upstream.
 
 **Rejected alternatives**.
 
-- _Both side transcript._ More expensive in tokens, albeit with better context of messages provided by both sides. 
+- _Full transcript (user + assistant)._ More expensive in tokens and creates the prompt-coupling loop above. The "better context" argument is largely absorbed by the third reason.
+- _User messages plus the system prompt._ Worst of both worlds: still couples extractor to chat prompt, adds no new content.
 
-**What this costs us**. Some content might be lost due to processing a single side of the conversation.
+**What this costs us**. Edge cases where the assistant directly named an emotion ("it sounds like that was really frustrating?") and the user responded with confirmation only ("yeah, exactly") become harder to label. In practice this is rare — bare confirmations without elaboration would be low-intensity signals anyway, on the edge of being worth flagging.
 
 ---
 
@@ -96,7 +100,7 @@ More importantly, negative emotions in a recap usually only become visible acros
 
 **Status**: Decided
 
-**Context**. The extraction result includes both `evidenceQuote` and `sourceMessageId`. I could validate that the quote is a substring of the message with that specific id, or that it is a substring of *any* user message.
+**Context**. The extraction result includes both `evidenceQuote` and `sourceMessageId`. I could validate that the quote is a substring of the message with that specific id, or that it is a substring of _any_ user message.
 
 **Decision**. Validate against any user message (`lib/llm/extract.ts:69`). Drop findings that fail this check; accept findings where the quote appears in a different user message than the one the model cited.
 
@@ -104,11 +108,9 @@ More importantly, negative emotions in a recap usually only become visible acros
 
 **Rejected alternatives**.
 
-- _Check quote against the specific `sourceMessageId` message only._ Catches false attribution but also throws away good findings due to id errors. Acceptable if the model was reliable on ids; it isn't.
+- _Check quote against the specific `sourceMessageId` message only._ Catches false attribution but also throws away good findings due to id errors. Acceptable if the model were reliable on ids; it isn't.
 
 **What this costs us**. A finding might display under the wrong message in a per-message annotation UI (if one were built). We don't have that UI; the result page shows a flat list of findings. Cost is negligible right now.
-
-**Revisit when**. Not really a "when", but if a per-message annotation view is added to the result page. Most likely won't happen. 
 
 ---
 
@@ -150,15 +152,15 @@ More importantly, negative emotions in a recap usually only become visible acros
 
 ---
 
-## D-08 — Per-cookie rate limit kept but not presented as a security control
+## D-08 — Per-cookie rate limit kept, but explicitly not described as a security control
 
 **Status**: Decided
 
 **Context**. The rate limit (10 conversations per anonymous cookie per hour) relies on a cookie value any hostile user can clear. Its defensive value is therefore limited.
 
-**Decision**. Keep the rate limit as-is. Describe it as a security control in the walkthrough or documentation.
+**Decision**. Keep the rate limit as-is. **Do not** describe it as a security control in the walkthrough or in any documentation. It is presented for what it actually is: an accidental-abuse limiter.
 
-**Why**. It provides real value against accidental abuse: a curious user hitting reload, a script that doesn't clear cookies, an automated scan that respects cookies. It adds no operational burden. It just shouldn't be cited as a meaningful defence against a determined attacker.
+**Why**. It provides real value against accidental abuse: a curious user hitting reload, a script that doesn't clear cookies, an automated scan that respects cookies. It adds no operational burden. It just shouldn't be cited as a meaningful defence against a determined attacker — that would overstate what's there, and would be the wrong claim to defend.
 
 **Rejected alternatives**.
 
@@ -169,40 +171,47 @@ More importantly, negative emotions in a recap usually only become visible acros
 
 ---
 
-## D-09 — UI Rework using UI UX Pro Max Design Intelligence for Claude Code
+## D-09 — Visual polish capped at a non-distracting baseline
 
 **Status**: Decided
 
-**Context**. Out of the box the app looks quite bad. I know the brief mentions not to focus on the UI, but I still feel the need to make the app look presentable and visually coherent. 
+**Context**. The default unstyled Next.js + Tailwind output was below my personal floor for shipping anything I'd demo on a call. The brief explicitly does not score visual polish, but a visibly raw UI distracts the reviewer from what _is_ being scored.
 
-**Decision**. Use UI UX Pro Max Design Intelligence skill provided by https://github.com/nextlevelbuilder/ui-ux-pro-max-skill. After the restyle, run a11y and frontend security checks, review the code manually. 
+**Decision**. Spent ~30 minutes running a single design pass via the UI UX Pro Max Design Intelligence skill (https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) to reach a professional baseline. Reviewed the resulting code manually, ran a11y and frontend security checks. No further visual investment.
 
-**Why**. It looks way better when presented as a product, not as a sum of components. 
+**Why**. "Visual polish is not scored" sets a ceiling, not a floor. A clearly amateur-looking UI signals carelessness about everything else, even when that's not what's being graded. A single AI-assisted styling pass over a Tailwind app is cheap enough that not doing it spends more credibility than doing it costs.
 
-**Rejected alternatives**. 
-- _Styling by myself._ No time, no point doing that.
-- _Using UI libraries (MUI, themeUI etc)._ Going with Tailwind and allowing Claude to stylize the app using the guidelines and several short prompts massively reduces the need to implement 3rd party libraries that would possible require to restyle anyway. 
+**Rejected alternatives**.
 
-**What this costs us**. Nothing. Installing the skill globally and using it in this project takes several minutes and saves hours if not days. 
+- _Style by hand._ Half a day of work I don't have, on something explicitly not scored.
+- _Install a UI component library (MUI, theme-ui, shadcn)._ More setup, more dependencies, more visual choices I'd have to defend stylistically. Tailwind + a single styling pass is lighter and uses less third-party surface.
+- _No styling pass at all._ The default look is below the bar I'd ship anything against, even on a 2-day prototype.
 
---- 
+**What this costs us**. Some of the visual choices came from the skill rather than from explicit design intent. If asked "why this layout or that colour", the honest answer is: that's the skill's baseline, not a deliberate design decision. 
 
-## D-10 — Model choice. Claude Haiku 4.5 for both stages by default. Cost target per conversation. 
+---
+
+## D-10 — Single model for both stages: Claude Haiku 4.5
 
 **Status**: Decided
 
-**Context**. Brief suggests managing costs and actively thinking about LLM implementation. Using more expensive models doesn't even remotely make sense — I don't run a top-of-the-line HR psychology software, the project doesn't need elaborate analysis engine.
+**Context**. Two model decisions were nested in one: which provider, and whether to use the same model for chat and extraction or split them. The brief calls out cost management explicitly.
 
-**Decision**. Use Claude Haiku 4.5. 
+**Decision**. Use Claude Haiku 4.5 for both the chat loop and the extraction call. Hard spend cap set on the Anthropic API key.
 
-**Why**. It's cheap, does the job reliably and I can limit my API budget that won't refill unless I want it to. 
+**Why**. Haiku is the cheapest production-grade model in the Anthropic line, reliable at the level of dialog and structured extraction this app needs. Empirically: an 8-message conversation plus the extraction call costs roughly **$0.003** end to end; one full pass of the 15-case eval set costs ~$0.04. The hard $5 spend cap on the key covers all development and demo needs by an order of magnitude.
 
-**Rejected alternatives**. 
-- _Google Gemini free tier._ 100 requests per day might not be enough considering backtests and live demo. 
+Splitting models (Haiku for chat, Sonnet for extraction) would gain marginal quality on the extraction step, but I'd be committing to a cost increase blind. The eval harness is the right gate for that decision — if Haiku's extraction plateaus below acceptable, the upgrade has evidence behind it.
 
-**What this costs us**. $5 in API budget. Backtests show running all 15 test cases once costs ~$0.04 per run — my budget limit handles the development and demo needs. I won't run a lot of backtests anyway since the system runs well as it is, so this is a better approach than going with Gemini — I have more volume at my disposal.
+**Rejected alternatives**.
 
-Update: after live test, the cost was mere $0.003 for the whole chat session (8 messages + evaluation). Very much worth it. 
+- _Split models (Haiku chat + Sonnet extract)._ Better quality ceiling but not justified before the eval harness shows Haiku failing. Revisit if eval plateaus.
+- _GPT-4o-mini._ Equivalent cost/capability profile. No technical reason to prefer one over Haiku; one fewer provider for credentials and SDK is the tiebreaker.
+- _Gemini free tier (100 req/day)._ Cap on volume conflicts with running the eval harness multiple times during development.
+
+**What this costs us**. Single-model architecture means any future quality gain from model splitting requires re-running the eval and reorganizing the LLM client layer. Cheap to undo.
+
+**Revisit when**. Eval stays below an acceptable threshold despite prompt iteration.
 
 ---
 
@@ -239,9 +248,11 @@ On display, the options were: a developer-only CLI harness, surfacing eval metri
 
 **Decision**. Hand-written reference cases in `evals/cases.json` scored by `pnpm eval`. Metrics: label-set precision, recall, macro F1; share of findings whose `evidenceQuote` is a verbatim substring of the transcript; mean USD cost. No eval UI in the app. The result page already surfaces `rationale` and `evidenceQuote` per finding, which is the user-facing auditability layer.
 
-**Why — no LLM-as-judge**. LLM-as-judge introduces circular dependency: I'd be using one Anthropic model to evaluate another Anthropic model on the same class of subjective task, with no ground truth to anchor either. It also burns additional credits and tells me only that the judge agreed or disagreed, not *what* the extractor got wrong. A reference set I wrote myself is a tiny bit slower to build but tells me exactly which cases fail and why.
+**Why — no LLM-as-judge**. LLM-as-judge introduces a circular dependency: I'd be using one Anthropic model to evaluate another Anthropic model on the same class of subjective task, with no ground truth to anchor either. It also burns additional credits and tells me only that the judge agreed or disagreed, not _what_ the extractor got wrong. A reference set I wrote myself is slightly slower to build but tells me exactly which cases fail and why.
 
-**Why — no eval UI in the app**. The brief doesn't ask for a monitoring dashboard, it asks for a working system I can defend. Serving eval results to the frontend would require storing them server-side, routing them through an API, and keeping them in sync with the case set — a non-trivial engineering surface for a prototype. More importantly, the two audiences are different: the user audits a single conversation's findings via rationale and evidenceQuote, already shown on the result page while I audit the system's aggregate accuracy via the CLI. Mixing them adds UI complexity and confuses the story on the walkthrough.
+**Why — no eval UI in the app**. The brief doesn't ask for a monitoring dashboard; it asks for a working system I can defend. Serving eval results to the frontend would require storing them server-side, routing them through an API, and keeping them in sync with the case set — a non-trivial engineering surface for a prototype.
+
+The two audiences are also different. The user audits a single conversation via the `rationale` and `evidenceQuote` already shown on the result page. I audit the system's aggregate accuracy via the CLI. Mixing them adds UI complexity and confuses the story on the walkthrough.
 
 **What this costs us**. The eval harness is only as good as the cases I wrote. Gaps in the case set are gaps in my visibility. Accepted: the brief is explicit that I'm being scored on judgment, not on having a perfect eval pipeline.
 
@@ -260,24 +271,40 @@ On display, the options were: a developer-only CLI harness, surfacing eval metri
 - **Conversation history UI.** Sessions are anonymous throwaway UUIDs. There's no identity to list history against, and the result page is reachable from the session cookie for 7 days if needed.
 - **Multi-language support.** The brief says English-only. This isn't a decision I need to make; it's a constraint I implemented by not doing anything special.
 - **Voice input.** Requires a speech-to-text pipeline and edge-case handling that would eat a day by itself with no benefit to extraction quality, which is what's being scored.
-- **Flashy UI, animations, fluid layout.** The brief explicitly says visual polish is not scored. The app works on desktop, it's responsive enough. It has a11y principles set in place and is secure as far as its use case goes and even beyond that. Lighthouse score 100/100/96/100.
-- **Persistent accounts and auth.** Anonymous session cookie is sufficient for the prototype. Auth requires a user store, password flows, and session management — a week of work on its own that adds no demonstrable value here. I'm planning on adding HTA prompt on every visit so this acts as an auth gate of its own. 
-- **Per-turn live emotion sidebar.** Already addressed in D-02. It's a worse product experience and a worse extraction quality, at higher cost.
+- **Flashy UI, animations, fluid layout.** The brief explicitly says visual polish is not scored. The app works on desktop and is responsive enough. Non-visual quality is in place: a11y principles applied, reasonable security posture for the use case, Lighthouse 100/100/96/100 across Performance, Accessibility, Best Practices, and SEO.
+- **Persistent accounts and full auth.** Anonymous session cookie is sufficient for the prototype. Full auth requires a user store, password flows, and session management — a week of work on its own that adds no demonstrable value here. An HTTP Basic Auth prompt is added on every visit to act as a lightweight access gate for the demo URL.
+- **Per-turn live emotion sidebar.** Already addressed in D-02. Worse product experience, worse extraction quality, higher cost.
 - **Export or result sharing.** The result page is a URL the user already has. Adding export adds a format decision (PDF? JSON?) and another surface to maintain.
-- **Conversation branching or message editing.** Messages are append-only. Editing past turns would invalidate `sourceMessageId` references and make the evidenceQuote validation non-deterministic.
+- **Conversation branching or message editing.** Messages are append-only. Editing past turns would invalidate `sourceMessageId` references and make the `evidenceQuote` validation non-deterministic.
 
 **Why this entry exists**. On the walkthrough, "why didn't you build X" is a predictable question. Having written answers to the obvious X's means I'm defending a position, not scrambling for one.
 
 ---
 
-## Pending decisions
+# What I would do with another week
 
-D-14 — What I would do with another week. Ordered list with rationale. Drives the closing minutes of the walkthrough.
+Not decisions — a separate forward-looking list. The closing minutes of the walkthrough draw from here. Ordered by leverage.
 
-## Open questions
+## 1. Pair a user feedback loop with eval-set expansion
 
-None currently.
+The eval harness is bottlenecked on the 15 cases I wrote, and those cases reflect my own assumptions about what's hard for the system. With another week, I'd add a simple feedback affordance to the result page — a "this is wrong" / "you missed something" pair of buttons per finding — that pushes flagged findings into a moderation queue. From the queue, real failure modes become candidate eval cases.
 
-## Future tasks
+This is the highest-leverage item on the list. Every other improvement only compounds if the eval set keeps growing past my own biases. Without it, model and prompt work asymptote against a fixed and incomplete benchmark.
 
-- Run a proper code review
+## 2. Two-stage extraction with a separate verifier
+
+The current pipeline does four things in a single tool call: identify the emotion, find the quote, judge intensity, write the rationale. The fragile step is the quote — D-06 already silently drops findings whose quotes don't validate.
+
+With more time I'd split this into two passes — a candidate-then-verify pipeline. The first pass runs on the cheap model and generates candidate `(label, quote)` pairs. The second pass on a more capable model (Sonnet, not Opus — Opus is overkill for this) takes each candidate plus the full transcript and independently confirms: is the quote really present, what intensity does it actually carry, what's the supporting reasoning. Both passes get stored, so systematic model errors become visible across the eval set rather than only on individual conversations.
+
+## 3. Intensity calibration via reference anchors
+
+The low/mid/high scale works because it's coarse. LLMs are known to be poor at fine numeric calibration without reference points. With another week, I'd add 2–3 worked examples per intensity level to the extraction prompt — each one a short user excerpt with a fixed intensity label, used as an anchor. This is the same technique psychometric scales use, and it would let me reasonably move to a 5-point scale without losing reliability.
+
+Listed third because I haven't yet seen evidence that the 3-point scale is the bottleneck. Worth doing only after the feedback loop has surfaced concrete miscalibration cases.
+
+## 4. Production-grade UI
+
+The current look is a non-distracting baseline (see D-09), not a finished product. A real version would have proper branding, considered micro-interactions, a mobile-responsive layout, explicit empty-state and loading-state for every async boundary, and an actual designer's input on the result-page hierarchy.
+
+Listed last because the brief explicitly does not score visual polish, and at the prototype stage every hour spent on UI is an hour not spent on the items above. In a real product with real users and a real team, this becomes a real line item.
