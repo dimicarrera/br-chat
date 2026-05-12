@@ -74,27 +74,112 @@ More importantly, negative emotions in a recap usually only become visible acros
 
 ---
 
-## Pending decisions
+## D-04 — Extraction prompt receives just user messages
 
-To be filled in as implementation progresses.
+**Status**: Decided
 
-## D-04 —
+**Context**. The extraction prompt could be handed the entire conversation (user + assistant turns) or only the user messages. Both are defensible. The question is whether assistant text contaminates the label output.
 
-**Status**:  
-**Context**.
-**Decision**.
-**Why**.
+**Decision**. Don't pass the full transcript.
+
+**Why**. Contamination risk is real and token costs double. Only evaluate what user says. 
+
 **Rejected alternatives**.
-**What this costs us**.
+
+- _Both side transcript._ More expensive in tokens, albeit with better context of messages provided by both sides. 
+
+**What this costs us**. Some content might be lost due to processing a single side of the conversation.
+
+---
+
+## D-05 — `evidenceQuote` validated against any user message, not against `sourceMessageId` specifically
+
+**Status**: Decided
+
+**Context**. The extraction result includes both `evidenceQuote` and `sourceMessageId`. I could validate that the quote is a substring of the message with that specific id, or that it is a substring of *any* user message.
+
+**Decision**. Validate against any user message (`lib/llm/extract.ts:69`). Drop findings that fail this check; accept findings where the quote appears in a different user message than the one the model cited.
+
+**Why**. The stricter check (`sourceMessageId`-specific) catches a real but rare failure mode — the model citing the right quote but tagging the wrong message id. In practice, the model more often gets the quote right and the id wrong than it invents a quote wholesale. Failing on id mismatch would silently discard valid findings. The looser check preserves the finding; the `sourceMessageId` field is advisory context for the UI, not a hard contract.
+
+**Rejected alternatives**.
+
+- _Check quote against the specific `sourceMessageId` message only._ Catches false attribution but also throws away good findings due to id errors. Acceptable if the model was reliable on ids; it isn't.
+
+**What this costs us**. A finding might display under the wrong message in a per-message annotation UI (if one were built). We don't have that UI; the result page shows a flat list of findings. Cost is negligible right now.
+
+**Revisit when**. Not really a "when", but if a per-message annotation view is added to the result page. Most likely won't happen. 
+
+---
+
+## D-06 — On extraction validation failure, drop bad findings and return the rest
+
+**Status**: Decided
+
+**Context**. When a finding's `evidenceQuote` doesn't appear in any user message, the system has three options: throw a hard error, retry with a corrective message, or silently drop the finding and return the remaining valid ones.
+
+**Decision**. Drop and continue. Return whatever valid findings remain, including an empty array if none survive.
+
+**Why**. A partial result is more useful to the user than an error page. A retry-with-correction is tempting but masks a brittle prompt rather than fixing it — if the prompt is producing ungrounded quotes consistently, the eval harness will surface that and force a real fix. The silent drop + eval loop is the feedback mechanism.
+
+**Rejected alternatives**.
+
+- _Hard error on any invalid finding._ Turns a prompt quality issue into a user-visible failure. Worse experience for no diagnostic benefit.
+- _Retry once with a corrective system message._ Could recover from a transient model error. Also hides prompt quality regressions. With the eval harness in place, hiding them is the worse tradeoff.
+
+**What this costs us**. A user could see a result with fewer findings than the true count, with no indication that any were dropped. Accepted at prototype scale where the eval harness is the quality gate.
+
+---
+
+## D-07 — "No negative emotions detected" framed as a neutral non-finding
+
+**Status**: Decided
+
+**Context**. When the extraction returns an empty `emotions` array, the result page needs to say something. The options are: positive framing ("sounds like a good day"), neutral framing ("nothing strong enough to flag"), or inconclusive framing ("not enough signal to say").
+
+**Decision**. Neutral: "Nothing strong enough to flag from this conversation." Shown in the result page when `emotions.length === 0`.
+
+**Why**. Positive framing makes a claim the system can't support — the conversation might have been superficial or the user might have withheld. Inconclusive framing undersells the system — it implies the conversation was too short or the model too uncertain, even when the signal is genuinely absent. Neutral framing makes only the claim the system actually made: it looked, and it found nothing above threshold.
+
+**Rejected alternatives**.
+
+- _"Sounds like a good day!"_ Would be wrong any time the user was brief or closed off. The system can't distinguish "good day" from "didn't share."
+- _"Not enough signal to draw conclusions."_ Makes the system sound unreliable even when it worked correctly.
+
+**What this costs us**. The result feels anticlimactic after an emotional conversation where the user was very private. Acceptable — honesty about detection limits is more important than a satisfying result screen.
+
+---
+
+## D-08 — Per-cookie rate limit kept but not presented as a security control
+
+**Status**: Decided
+
+**Context**. The rate limit (10 conversations per anonymous cookie per hour) relies on a cookie value any hostile user can clear. Its defensive value is therefore limited.
+
+**Decision**. Keep the rate limit as-is. Describe it as a security control in the walkthrough or documentation.
+
+**Why**. It provides real value against accidental abuse: a curious user hitting reload, a script that doesn't clear cookies, an automated scan that respects cookies. It adds no operational burden. It just shouldn't be cited as a meaningful defence against a determined attacker.
+
+**Rejected alternatives**.
+
+- _Remove it entirely._ No upside; it does stop accidental overconsumption and is already implemented.
+- _Replace with IP-based rate limiting only._ The existing `@upstash/ratelimit` setup already does 200/IP/day as a secondary layer. Cookie limiting is additive, not redundant.
+
+**What this costs us**. Nothing. A real attacker clears the cookie; an accidental one doesn't.
 
 ---
 
 ## Open questions
 
-Things I don't have an answer to yet and want to track explicitly rather than forget.
+None at this point.
 
-- Whether the extraction prompt should see assistant messages or only user messages. Current default: full transcript, because the assistant's questions give user replies their meaning. But the assistant text is also a possible source of label contamination if it ever mirrors emotional vocabulary back at the user.
-- How to frame "no negative emotions detected" in the UI. Three real options: positive ("sounds like it was a good day"), neutral ("nothing strong enough to flag"), or inconclusive ("not enough signal"). Each carries a different implicit promise about what the system can detect.
-- What to do on extraction validation failure (e.g. a quote that isn't a substring of any user message). Retry once with a corrective system message, or report and stop. Retry can mask a brittle prompt; stopping forces me to actually fix it.
-- Whether evidenceQuote should be checked against sourceMessageId specifically, or against any user message in the transcript. The stricter check catches a real failure mode (model attributes a quote to the wrong message) but is more brittle to minor paraphrasing.
-- Whether rate limiting on an anonymous cookie has any real defensive value given that anyone hostile can clear it. Probably worth keeping for accidental abuse and as a defence-in-depth layer, but I shouldn't present it on the revision call as a real security control. 
+## Pending decisions
+
+None at this point.
+
+## Future tasks
+
+- Add HTA in prod to drastically limit token overconsumption by attackers.
+- Add pnpm arch script to verify CI on every push
+- Add architectural rules to dependency-cruiser.cjs
+- Run a proper code review
