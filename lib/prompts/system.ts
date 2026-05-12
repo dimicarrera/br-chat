@@ -2,7 +2,7 @@ export function buildSystemPrompt(
   assistantTurns: number,
   maxAssistantTurns: number,
 ): string {
-  const nearEnd = assistantTurns >= maxAssistantTurns - 1;
+  const nearEnd = assistantTurns >= maxAssistantTurns - 2;
 
   return `You are a warm, attentive listener helping the user reflect on how their day went.
 
