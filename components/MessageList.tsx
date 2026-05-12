@@ -44,14 +44,14 @@ export default function MessageList({ messages, isLoading }: Props) {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+    <div role="log" aria-label="Conversation" className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
       {messages.map((m) => (
         <div
           key={m.id}
           className={`flex gap-2.5 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
         >
           {m.role === 'assistant' && (
-            <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-[#818CF8] bg-[rgba(99,102,241,0.12)] border border-[rgba(99,102,241,0.2)] shrink-0 mt-1">
+            <div aria-hidden="true" className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-[#818CF8] bg-[rgba(99,102,241,0.12)] border border-[rgba(99,102,241,0.2)] shrink-0 mt-1">
               AI
             </div>
           )}
@@ -64,10 +64,10 @@ export default function MessageList({ messages, isLoading }: Props) {
           >
             {m.content ||
               (isLoading && m.role === 'assistant' ? (
-                <span className="inline-flex gap-1 items-center py-0.5">
-                  <span className="w-[5px] h-[5px] bg-[#4B5563] rounded-full animate-bounce [animation-delay:0ms]" />
-                  <span className="w-[5px] h-[5px] bg-[#4B5563] rounded-full animate-bounce [animation-delay:150ms]" />
-                  <span className="w-[5px] h-[5px] bg-[#4B5563] rounded-full animate-bounce [animation-delay:300ms]" />
+                <span role="status" aria-label="Assistant is typing" className="inline-flex gap-1 items-center py-0.5">
+                  <span aria-hidden="true" className="w-[5px] h-[5px] bg-[#4B5563] rounded-full animate-bounce [animation-delay:0ms]" />
+                  <span aria-hidden="true" className="w-[5px] h-[5px] bg-[#4B5563] rounded-full animate-bounce [animation-delay:150ms]" />
+                  <span aria-hidden="true" className="w-[5px] h-[5px] bg-[#4B5563] rounded-full animate-bounce [animation-delay:300ms]" />
                 </span>
               ) : null)}
           </div>

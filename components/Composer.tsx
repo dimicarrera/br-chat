@@ -37,10 +37,11 @@ export default function Composer({ onSend, disabled }: Props) {
 
   return (
     <div className="px-4 pt-3 pb-3">
-      <div className="flex items-end gap-2.5 rounded-xl px-3.5 py-2.5 bg-[#161B27] border border-[rgba(255,255,255,0.07)]">
+      <div className="flex items-end gap-2.5 rounded-xl px-3.5 py-2.5 bg-[#161B27] border border-[rgba(255,255,255,0.07)] focus-within:ring-1 focus-within:ring-[rgba(99,102,241,0.5)] focus-within:border-[rgba(99,102,241,0.4)] transition-shadow">
         <textarea
           ref={textareaRef}
           name="chatinput"
+          aria-label="Message"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={onKeyDown}
@@ -54,7 +55,7 @@ export default function Composer({ onSend, disabled }: Props) {
           onClick={submit}
           disabled={disabled || !value.trim()}
           aria-label="Send"
-          className={`flex-shrink-0 w-[30px] h-[30px] flex items-center justify-center rounded-lg transition-all disabled:opacity-25 ${
+          className={`flex-shrink-0 w-[30px] h-[30px] flex items-center justify-center rounded-lg transition-all disabled:opacity-25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#161B27] ${
             active
               ? 'bg-[linear-gradient(135deg,#6366F1,#4F46E5)] shadow-[0_0_12px_rgba(99,102,241,0.4)]'
               : 'bg-[rgba(99,102,241,0.15)]'

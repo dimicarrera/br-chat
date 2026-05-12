@@ -95,7 +95,7 @@ export default async function ResultPage({ params }: Props) {
             </p>
           </div>
         ) : (
-          <section className="space-y-3">
+          <section aria-label="Emotion findings" className="space-y-3">
             <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#475569]">
               Findings ({emotions.length})
             </p>
@@ -109,15 +109,17 @@ export default async function ResultPage({ params }: Props) {
           <Link href="/" className="text-sm text-[#6366F1] transition-colors">
             ← New check-in
           </Link>
-          <details className="text-right">
-            <summary className="text-[10px] text-[rgba(255,255,255,0.15)] cursor-pointer select-none list-none">
-              Dev info
-            </summary>
-            <p className="mt-1 text-[10px] text-[rgba(255,255,255,0.15)]">
-              {usage.inputTokens} in / {usage.outputTokens} out &middot; $
-              {usage.usdEstimate.toFixed(5)} &middot; {extraction.model}
-            </p>
-          </details>
+          {process.env.NODE_ENV === 'development' && (
+            <details className="text-right">
+              <summary className="text-[10px] text-slate-500 cursor-pointer select-none list-none">
+                Dev info
+              </summary>
+              <p className="mt-1 text-[10px] text-slate-500">
+                {usage.inputTokens} in / {usage.outputTokens} out &middot; $
+                {usage.usdEstimate.toFixed(5)} &middot; {extraction.model}
+              </p>
+            </details>
+          )}
         </footer>
 
       </div>

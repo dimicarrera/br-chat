@@ -135,6 +135,11 @@ export default function Chat() {
           </div>
           <div className="h-[2px] rounded-full overflow-hidden bg-[rgba(255,255,255,0.06)]">
             <div
+              role="progressbar"
+              aria-label="Check-in progress"
+              aria-valuenow={assistantTurns}
+              aria-valuemin={0}
+              aria-valuemax={maxTurns}
               className={`h-full rounded-full transition-all duration-700 ${progressPct > 0 ? 'bg-[linear-gradient(90deg,#6366F1,#818CF8)] shadow-[0_0_8px_rgba(99,102,241,0.7)]' : ''}`}
               style={{ width: `${progressPct}%` }}
             />
