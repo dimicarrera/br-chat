@@ -1,1 +1,268 @@
-{}
+{
+  "ranAt": "2026-05-12T12:34:11.917Z",
+  "model": "claude-haiku-4-5-20251001",
+  "cases": [
+    {
+      "caseId": "case-01-burnout-explicit",
+      "description": "User names burnout directly after describing months of unsustainable hours.",
+      "predictedLabels": [
+        "burnout",
+        "frustration",
+        "disappointment"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0028192
+    },
+    {
+      "caseId": "case-02-burnout-implicit",
+      "description": "User describes long hours and weekend work; never names the emotion.",
+      "predictedLabels": [
+        "burnout",
+        "loneliness",
+        "anxiety"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0028136000000000003
+    },
+    {
+      "caseId": "case-03-anxiety-health",
+      "description": "User waiting for medical test results; fear is present but never named.",
+      "predictedLabels": [
+        "anxiety",
+        "frustration",
+        "disappointment"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0028976
+    },
+    {
+      "caseId": "case-04-anxiety-implicit",
+      "description": "Vague workplace unease after a reorg announcement; user never says anxious.",
+      "predictedLabels": [
+        "anxiety",
+        "anxiety"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0023912
+    },
+    {
+      "caseId": "case-05-frustration-blocked",
+      "description": "User blocked by a broken deployment pipeline all day; clearly frustrated but measured.",
+      "predictedLabels": [
+        "frustration",
+        "frustration",
+        "burnout",
+        "resentment"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0032416
+    },
+    {
+      "caseId": "case-06-sadness-loss",
+      "description": "User's dog of fourteen years had to be put down; grief is vivid and sustained.",
+      "predictedLabels": [
+        "sadness",
+        "sadness"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0023991999999999998
+    },
+    {
+      "caseId": "case-07-shame-public",
+      "description": "User cut across a junior colleague mid-presentation; guilt is lingering.",
+      "predictedLabels": [
+        "shame",
+        "disappointment",
+        "regret"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0027312
+    },
+    {
+      "caseId": "case-08-resentment-chronic",
+      "description": "User's work credit has been misattributed to a colleague three times this year.",
+      "predictedLabels": [
+        "resentment",
+        "disappointment",
+        "burnout"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.00292
+    },
+    {
+      "caseId": "case-09-anger-betrayal",
+      "description": "Business partner sent a contract behind the user's back; anger is explicit and high.",
+      "predictedLabels": [
+        "anger",
+        "frustration",
+        "resentment"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0028704
+    },
+    {
+      "caseId": "case-10-disappointment-shelved",
+      "description": "A three-month initiative the user championed was shelved with a two-line email.",
+      "predictedLabels": [
+        "disappointment",
+        "frustration",
+        "resentment"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [
+        "forbidden: resentment"
+      ],
+      "precision": 0.5,
+      "recall": 1,
+      "f1": 0.6666666666666666,
+      "allQuotesValid": true,
+      "passed": false,
+      "usdCost": 0.0030072
+    },
+    {
+      "caseId": "case-11-envy-career",
+      "description": "User notices a peer's rapid promotion and struggles to suppress the comparison.",
+      "predictedLabels": [
+        "envy",
+        "disappointment",
+        "resentment"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0026912
+    },
+    {
+      "caseId": "case-12-loneliness-relocation",
+      "description": "User relocated to a new city three months ago and has no social circle yet.",
+      "predictedLabels": [
+        "loneliness",
+        "loneliness",
+        "disappointment"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0029112
+    },
+    {
+      "caseId": "case-13-jealousy-partner",
+      "description": "User unsettled by a close new friendship their partner has formed; never names the feeling.",
+      "predictedLabels": [
+        "anxiety",
+        "jealousy",
+        "shame"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [
+        "forbidden: shame"
+      ],
+      "precision": 0.5,
+      "recall": 1,
+      "f1": 0.6666666666666666,
+      "allQuotesValid": true,
+      "passed": false,
+      "usdCost": 0.0028912
+    },
+    {
+      "caseId": "case-14-positive",
+      "description": "User shipped a long-running feature and received genuine appreciation; no negative emotions expected.",
+      "predictedLabels": [],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.001436
+    },
+    {
+      "caseId": "case-15-multi-emotion",
+      "description": "Father hospitalized; sibling absent as always. Sadness and resentment coexist across several turns.",
+      "predictedLabels": [
+        "anxiety",
+        "sadness",
+        "resentment",
+        "burnout"
+      ],
+      "mustIncludeViolations": [],
+      "mustNotIncludeViolations": [],
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "allQuotesValid": true,
+      "passed": true,
+      "usdCost": 0.0034496
+    }
+  ],
+  "macroPrecision": 0.9333333333333333,
+  "macroRecall": 1,
+  "macroF1": 0.9555555555555555,
+  "passRate": 0.8666666666666667,
+  "quoteAccuracy": 1,
+  "meanUsdPerCase": 0.002764693333333333,
+  "totalUsd": 0.0414704
+}
