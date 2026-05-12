@@ -5,7 +5,7 @@
 ## 1. Goals and non-goals
 
 **Goals**
-- Conduct a one-on-one English conversation with the user about their day (capped at ~8 assistant turns).
+- Conduct a one-on-one English-only (no other languages should work by design) conversation with the user about their day (capped at ~8 assistant turns).
 - On user request, analyze the transcript and surface negative emotions with supporting verbatim quotes from the user's messages.
 - Be cheap to run, trivial to deploy, easy to defend in a 15-minute walkthrough.
 

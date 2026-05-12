@@ -35,9 +35,10 @@ export default function Composer({ onSend, disabled }: Props) {
 
   return (
     <div className="border-t border-zinc-200 px-4 py-3">
-      <div className="flex items-end gap-2 rounded-xl border border-zinc-300 bg-white px-3 py-2 focus-within:border-zinc-500 transition-colors">
+      <div className="flex items-end gap-2 rounded-xl border border-zinc-300 bg-white text-black px-3 py-2 focus-within:border-zinc-500 transition-colors">
         <textarea
           ref={textareaRef}
+          name="chatinput"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={onKeyDown}

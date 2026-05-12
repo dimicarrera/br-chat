@@ -43,9 +43,8 @@ export async function extractEmotions(
   const model = process.env.MODEL_EXTRACT ?? 'claude-haiku-4-5-20251001';
 
   const userMessages = messages.filter((m) => m.role === 'user');
-  const transcript = messages
-    .filter((m) => m.role !== 'system')
-    .map((m) => `${m.role.toUpperCase()} [${m.id}]: ${m.content}`)
+  const transcript = userMessages
+    .map((m) => `USER [${m.id}]: ${m.content}`)
     .join('\n\n');
 
   const response = await anthropic.messages.create({
