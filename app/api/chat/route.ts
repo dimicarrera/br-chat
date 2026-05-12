@@ -33,11 +33,6 @@ export async function POST(req: NextRequest) {
   const existingCookieId = getCookieId(req);
   const cookieId = existingCookieId ?? newCookieId();
 
-  const { success: allowed } = await ratelimit.limit(cookieId);
-  if (!allowed) {
-    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
-  }
-
   const maxTurns = Number(process.env.MAX_ASSISTANT_TURNS ?? 8);
   let session: Session;
 
@@ -54,6 +49,10 @@ export async function POST(req: NextRequest) {
     }
     session = existing;
   } else {
+    const { success: allowed } = await ratelimit.limit(cookieId);
+    if (!allowed) {
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+    }
     session = {
       id: uuidv4(),
       createdAt: Date.now(),

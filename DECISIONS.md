@@ -202,6 +202,8 @@ More importantly, negative emotions in a recap usually only become visible acros
 
 **What this costs us**. $5 in API budget. Backtests show running all 15 test cases once costs ~$0.04 per run — my budget limit handles the development and demo needs. I won't run a lot of backtests anyway since the system runs well as it is, so this is a better approach than going with Gemini — I have more volume at my disposal.
 
+Update: after live test, the cost was mere $0.003 for the whole chat session (8 messages + evaluation). Very much worth it. 
+
 ---
 
 ## D-11 — Structured output via forced tool call, not JSON mode or prompt-and-parse

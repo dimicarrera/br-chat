@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-05-12T12:34:11.917Z",
+  "ranAt": "2026-05-12T13:23:12.911Z",
   "model": "claude-haiku-4-5-20251001",
   "cases": [
     {
@@ -17,7 +17,7 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0028192
+      "usdCost": 0.002792
     },
     {
       "caseId": "case-02-burnout-implicit",
@@ -34,7 +34,7 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0028136000000000003
+      "usdCost": 0.0028304000000000003
     },
     {
       "caseId": "case-03-anxiety-health",
@@ -42,7 +42,7 @@
       "predictedLabels": [
         "anxiety",
         "frustration",
-        "disappointment"
+        "burnout"
       ],
       "mustIncludeViolations": [],
       "mustNotIncludeViolations": [],
@@ -51,7 +51,7 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0028976
+      "usdCost": 0.002712
     },
     {
       "caseId": "case-04-anxiety-implicit",
@@ -67,7 +67,7 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0023912
+      "usdCost": 0.002448
     },
     {
       "caseId": "case-05-frustration-blocked",
@@ -75,8 +75,7 @@
       "predictedLabels": [
         "frustration",
         "frustration",
-        "burnout",
-        "resentment"
+        "burnout"
       ],
       "mustIncludeViolations": [],
       "mustNotIncludeViolations": [],
@@ -85,14 +84,15 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0032416
+      "usdCost": 0.0029384
     },
     {
       "caseId": "case-06-sadness-loss",
       "description": "User's dog of fourteen years had to be put down; grief is vivid and sustained.",
       "predictedLabels": [
         "sadness",
-        "sadness"
+        "sadness",
+        "loneliness"
       ],
       "mustIncludeViolations": [],
       "mustNotIncludeViolations": [],
@@ -101,14 +101,14 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0023991999999999998
+      "usdCost": 0.0028896
     },
     {
       "caseId": "case-07-shame-public",
       "description": "User cut across a junior colleague mid-presentation; guilt is lingering.",
       "predictedLabels": [
         "shame",
-        "disappointment",
+        "sadness",
         "regret"
       ],
       "mustIncludeViolations": [],
@@ -118,7 +118,7 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0027312
+      "usdCost": 0.0027911999999999998
     },
     {
       "caseId": "case-08-resentment-chronic",
@@ -135,15 +135,15 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.00292
+      "usdCost": 0.0028
     },
     {
       "caseId": "case-09-anger-betrayal",
       "description": "Business partner sent a contract behind the user's back; anger is explicit and high.",
       "predictedLabels": [
         "anger",
-        "frustration",
-        "resentment"
+        "resentment",
+        "frustration"
       ],
       "mustIncludeViolations": [],
       "mustNotIncludeViolations": [],
@@ -152,7 +152,7 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0028704
+      "usdCost": 0.0028656000000000003
     },
     {
       "caseId": "case-10-disappointment-shelved",
@@ -171,7 +171,7 @@
       "f1": 0.6666666666666666,
       "allQuotesValid": true,
       "passed": false,
-      "usdCost": 0.0030072
+      "usdCost": 0.0029656
     },
     {
       "caseId": "case-11-envy-career",
@@ -179,22 +179,25 @@
       "predictedLabels": [
         "envy",
         "disappointment",
-        "resentment"
+        "jealousy"
       ],
       "mustIncludeViolations": [],
-      "mustNotIncludeViolations": [],
-      "precision": 1,
+      "mustNotIncludeViolations": [
+        "forbidden: jealousy"
+      ],
+      "precision": 0.5,
       "recall": 1,
-      "f1": 1,
+      "f1": 0.6666666666666666,
       "allQuotesValid": true,
-      "passed": true,
-      "usdCost": 0.0026912
+      "passed": false,
+      "usdCost": 0.0028976
     },
     {
       "caseId": "case-12-loneliness-relocation",
       "description": "User relocated to a new city three months ago and has no social circle yet.",
       "predictedLabels": [
         "loneliness",
+        "sadness",
         "loneliness",
         "disappointment"
       ],
@@ -205,7 +208,7 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0029112
+      "usdCost": 0.0032424
     },
     {
       "caseId": "case-13-jealousy-partner",
@@ -224,7 +227,7 @@
       "f1": 0.6666666666666666,
       "allQuotesValid": true,
       "passed": false,
-      "usdCost": 0.0028912
+      "usdCost": 0.0029208000000000003
     },
     {
       "caseId": "case-14-positive",
@@ -237,7 +240,7 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.001436
+      "usdCost": 0.0014320000000000001
     },
     {
       "caseId": "case-15-multi-emotion",
@@ -255,14 +258,14 @@
       "f1": 1,
       "allQuotesValid": true,
       "passed": true,
-      "usdCost": 0.0034496
+      "usdCost": 0.0033160000000000004
     }
   ],
-  "macroPrecision": 0.9333333333333333,
+  "macroPrecision": 0.9,
   "macroRecall": 1,
-  "macroF1": 0.9555555555555555,
-  "passRate": 0.8666666666666667,
+  "macroF1": 0.9333333333333332,
+  "passRate": 0.8,
   "quoteAccuracy": 1,
-  "meanUsdPerCase": 0.002764693333333333,
-  "totalUsd": 0.0414704
+  "meanUsdPerCase": 0.0027894400000000002,
+  "totalUsd": 0.04184160000000001
 }
