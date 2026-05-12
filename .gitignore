@@ -1,1 +1,7 @@
 node_modules
+.next
+BRIEF.md
+.claude
+graphify-out
+.vercel
+.env*.local

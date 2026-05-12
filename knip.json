@@ -1,10 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
+    "middleware.ts",
     "app/**/{page,layout,route}.tsx",
     "app/**/{page,layout,route}.ts"
   ],
-  "project": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts", "evals/**/*.ts"],
+  "project": ["middleware.ts", "app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts", "evals/**/*.ts"],
   "ignoreDependencies": ["tailwindcss"],
   "ignore": []
 }
