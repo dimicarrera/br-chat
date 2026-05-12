@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "eval": "tsx evals/run.ts",
+    "eval": "tsx --env-file=.env.local evals/run.ts",
     "check:deps": "depcruise app components lib --config .dependency-cruiser.cjs --output-type text",
     "check:knip": "knip",
     "arch": "knip && depcruise app components lib --config .dependency-cruiser.cjs --output-type text"
