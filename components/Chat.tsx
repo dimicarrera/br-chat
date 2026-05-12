@@ -50,7 +50,7 @@ export default function Chat() {
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId, message: text }),
+          body: JSON.stringify({ ...(sessionId ? { sessionId } : {}), message: text }),
           signal: controller.signal,
         });
 
