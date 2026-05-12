@@ -72,7 +72,7 @@ export default function Composer({ onSend, disabled }: Props) {
           </svg>
         </button>
       </div>
-      <p className="mt-1.5 text-center text-[11px] text-[rgba(255,255,255,0.18)]">
+      <p className="mt-1.5 text-center text-[11px] text-slate-400">
         Enter to send · Shift+Enter for new line
       </p>
     </div>

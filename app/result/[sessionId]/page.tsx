@@ -50,16 +50,16 @@ export default async function ResultPage({ params }: Props) {
             </div>
             <span className="text-sm font-semibold text-slate-200">BR-Chat</span>
             <span className="text-slate-700" aria-hidden="true">·</span>
-            <span className="text-xs text-slate-500">Wellbeing Report</span>
+            <span className="text-xs text-slate-400">Wellbeing Report</span>
           </div>
           <div>
             <h1 className="text-2xl font-semibold text-slate-100">Session {sessionRef}</h1>
-            <p className="text-sm text-slate-600 mt-1">{date}</p>
+            <p className="text-sm text-slate-400 mt-1">{date}</p>
           </div>
         </header>
 
         <div className="rounded-2xl p-5 bg-[#0D1117] border border-[rgba(255,255,255,0.06)]">
-          <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#475569] mb-3">
+          <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-slate-400 mb-3">
             Summary
           </p>
           <p className="text-sm text-slate-300 leading-relaxed">{summary}</p>
@@ -90,13 +90,13 @@ export default async function ResultPage({ params }: Props) {
 
         {emotions.length === 0 ? (
           <div className="rounded-2xl p-5 bg-[#0D1117] border border-[rgba(255,255,255,0.06)]">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-400">
               Nothing strong enough to flag from this conversation.
             </p>
           </div>
         ) : (
           <section aria-label="Emotion findings" className="space-y-3">
-            <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#475569]">
+            <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-slate-400">
               Findings ({emotions.length})
             </p>
             {sorted.map((finding, i) => (
@@ -111,10 +111,10 @@ export default async function ResultPage({ params }: Props) {
           </Link>
           {process.env.NODE_ENV === 'development' && (
             <details className="text-right">
-              <summary className="text-[10px] text-slate-500 cursor-pointer select-none list-none">
+              <summary className="text-[10px] text-slate-400 cursor-pointer select-none list-none">
                 Dev info
               </summary>
-              <p className="mt-1 text-[10px] text-slate-500">
+              <p className="mt-1 text-[10px] text-slate-400">
                 {usage.inputTokens} in / {usage.outputTokens} out &middot; $
                 {usage.usdEstimate.toFixed(5)} &middot; {extraction.model}
               </p>

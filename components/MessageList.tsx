@@ -35,7 +35,7 @@ export default function MessageList({ messages, isLoading }: Props) {
         </div>
         <div className="text-center space-y-1">
           <p className="text-sm font-medium text-slate-400">How was your day?</p>
-          <p className="text-xs text-slate-600 leading-relaxed">
+          <p className="text-xs text-slate-400 leading-relaxed">
             This is a confidential check-in. Share as much or as little as you&apos;d like.
           </p>
         </div>

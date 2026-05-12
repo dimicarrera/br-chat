@@ -54,7 +54,7 @@ export default function EmotionCard({ finding }: Props) {
 
       <div className="space-y-1">
         <p className="text-xs text-slate-400">{rationale}</p>
-        <p className="text-xs text-slate-600">{EMOTION_DEFINITIONS[label]}</p>
+        <p className="text-xs text-slate-400">{EMOTION_DEFINITIONS[label]}</p>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import MessageList from './MessageList';
 import Composer from './Composer';
@@ -20,6 +20,11 @@ export default function Chat() {
   const [assistantTurns, setAssistantTurns] = useState(0);
   const [maxTurns, setMaxTurns] = useState(8);
   const router = useRouter();
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -40,10 +45,13 @@ export default function Chat() {
       ]);
 
       try {
+        const controller = new AbortController();
+        abortRef.current = controller;
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ sessionId, message: text }),
+          signal: controller.signal,
         });
 
         if (!res.ok) {
@@ -121,15 +129,15 @@ export default function Chat() {
             </div>
             <span className="text-sm font-semibold text-slate-100">BR-Chat</span>
             <span className="text-slate-700 text-sm" aria-hidden="true">·</span>
-            <span className="text-xs text-slate-500">Employee Wellness</span>
+            <span className="text-xs text-slate-400">Employee Wellness</span>
           </div>
-          <span className="text-[9px] font-semibold text-slate-600 tracking-[0.14em] uppercase rounded-md px-2 py-1 border border-[rgba(255,255,255,0.07)]">
+          <span className="text-[9px] font-semibold text-slate-400 tracking-[0.14em] uppercase rounded-md px-2 py-1 border border-[rgba(255,255,255,0.07)]">
             Confidential
           </span>
         </header>
 
         <div className="px-5 pt-3 pb-3 shrink-0 border-b border-b-[rgba(255,255,255,0.04)]">
-          <div className="flex items-center justify-between mb-1.5 text-[11px] text-slate-600">
+          <div className="flex items-center justify-between mb-1.5 text-[11px] text-slate-400">
             <span>Check-in progress</span>
             <span>{assistantTurns} / {maxTurns}</span>
           </div>
