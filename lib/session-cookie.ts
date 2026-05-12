@@ -1,9 +1,11 @@
 import type { NextRequest } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
+import { UUID_RE } from './utils';
 
 const COOKIE_NAME = 'br_sid';
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+// Match session TTL so the rate-limit cookie ID survives the full session lifetime
+const rawTTL = parseInt(process.env.SESSION_TTL_SECONDS ?? '604800', 10);
+const COOKIE_MAX_AGE = Number.isFinite(rawTTL) && rawTTL > 0 ? rawTTL : 604800;
 
 export function getCookieId(req: NextRequest): string | null {
   const value = req.cookies.get(COOKIE_NAME)?.value;
@@ -16,6 +18,6 @@ export function newCookieId(): string {
 
 export function buildSetCookieHeader(id: string): string {
   const secure = process.env.NODE_ENV === 'production';
-  const base = `${COOKIE_NAME}=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600`;
+  const base = `${COOKIE_NAME}=${id}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${COOKIE_MAX_AGE}`;
   return secure ? `${base}; Secure` : base;
 }

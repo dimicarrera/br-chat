@@ -1,4 +1,4 @@
-import { anthropic } from './client';
+import { anthropic, DEFAULT_MODEL } from './client';
 import type { Message } from '../types';
 import { buildSystemPrompt } from '../prompts/system';
 
@@ -7,7 +7,7 @@ export function streamChat(
   assistantTurns: number,
   maxAssistantTurns: number,
 ) {
-  const model = process.env.MODEL_CHAT ?? 'claude-haiku-4-5-20251001';
+  const model = process.env.MODEL_CHAT ?? DEFAULT_MODEL;
   const system = buildSystemPrompt(assistantTurns, maxAssistantTurns);
 
   const apiMessages = messages

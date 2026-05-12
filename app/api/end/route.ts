@@ -38,9 +38,12 @@ export async function POST(req: NextRequest) {
   }
 
   const extraction = await extractEmotions(sessionId, session.messages);
-  session.endedAt = Date.now();
 
-  await Promise.all([saveExtraction(extraction), saveSession(session)]);
+  // Only mark session ended after extraction succeeds, so a failed extraction
+  // doesn't leave the session in a permanently broken state.
+  session.endedAt = Date.now();
+  await saveExtraction(extraction);
+  await saveSession(session);
 
   return NextResponse.json({ extraction });
 }

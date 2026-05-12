@@ -2,13 +2,11 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import EmotionCard from '@/components/EmotionCard';
 import { getSession, getExtraction } from '@/lib/storage/sessions';
+import { UUID_RE } from '@/lib/utils';
 
 interface Props {
   params: Promise<{ sessionId: string }>;
 }
-
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export default async function ResultPage({ params }: Props) {
   const { sessionId } = await params;
@@ -99,8 +97,8 @@ export default async function ResultPage({ params }: Props) {
             <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-slate-400">
               Findings ({emotions.length})
             </p>
-            {sorted.map((finding, i) => (
-              <EmotionCard key={i} finding={finding} />
+            {sorted.map((finding) => (
+              <EmotionCard key={`${finding.label}_${finding.sourceMessageId}`} finding={finding} />
             ))}
           </section>
         )}

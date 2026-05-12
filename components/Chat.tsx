@@ -17,6 +17,7 @@ export default function Chat() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
+  const [endError, setEndError] = useState<string | null>(null);
   const [assistantTurns, setAssistantTurns] = useState(0);
   const [maxTurns, setMaxTurns] = useState(8);
   const router = useRouter();
@@ -63,9 +64,13 @@ export default function Chat() {
         if (sid && !sessionId) setSessionId(sid);
 
         const maxT = res.headers.get('X-Max-Turns');
-        if (maxT) setMaxTurns(Number(maxT));
+        if (maxT) {
+          const parsed = parseInt(maxT, 10);
+          if (Number.isFinite(parsed) && parsed > 0) setMaxTurns(parsed);
+        }
 
-        const reader = res.body!.getReader();
+        const reader = res.body?.getReader();
+        if (!reader) throw new Error('No response body');
         const decoder = new TextDecoder();
         let content = '';
 
@@ -100,6 +105,7 @@ export default function Chat() {
   const endConversation = useCallback(async () => {
     if (!sessionId || isEnding) return;
     setIsEnding(true);
+    setEndError(null);
     try {
       const res = await fetch('/api/end', {
         method: 'POST',
@@ -110,6 +116,7 @@ export default function Chat() {
       router.push(`/result/${sessionId}`);
     } catch {
       setIsEnding(false);
+      setEndError('Could not process your session. Please try again.');
     }
   }, [sessionId, isEnding, router]);
 
@@ -159,7 +166,10 @@ export default function Chat() {
         <div className="shrink-0 border-t border-t-[rgba(255,255,255,0.06)]">
           <Composer onSend={sendMessage} disabled={isLoading || atLimit} />
           {sessionId && (
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-4 space-y-2">
+              {endError && (
+                <p role="alert" className="text-center text-xs text-red-400">{endError}</p>
+              )}
               <EndButton onClick={endConversation} disabled={isEnding} atLimit={atLimit} />
             </div>
           )}

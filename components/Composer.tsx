@@ -72,9 +72,19 @@ export default function Composer({ onSend, disabled }: Props) {
           </svg>
         </button>
       </div>
-      <p className="mt-1.5 text-center text-[11px] text-slate-400">
-        Enter to send · Shift+Enter for new line
-      </p>
+      <div className="mt-1.5 flex items-center justify-between px-0.5">
+        <p className="text-[11px] text-slate-400">
+          Enter to send <span aria-hidden="true">&middot;</span> Shift+Enter for new line
+        </p>
+        {value.length > 1800 && (
+          <p
+            aria-live="polite"
+            className={`text-[11px] tabular-nums ${value.length >= 2000 ? 'text-red-400' : 'text-amber-400'}`}
+          >
+            {value.length}/2000
+          </p>
+        )}
+      </div>
     </div>
   );
 }

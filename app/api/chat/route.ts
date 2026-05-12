@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
   const existingCookieId = getCookieId(req);
   const cookieId = existingCookieId ?? newCookieId();
 
-  const maxTurns = Number(process.env.MAX_ASSISTANT_TURNS ?? 8);
+  const rawMax = parseInt(process.env.MAX_ASSISTANT_TURNS ?? '8', 10);
+  const maxTurns = Number.isFinite(rawMax) && rawMax > 0 ? rawMax : 8;
   let session: Session;
 
   if (clientSessionId) {

@@ -1,8 +1,22 @@
-import { anthropic } from './client';
+import { z } from 'zod';
+import { anthropic, DEFAULT_MODEL } from './client';
 import { NEGATIVE_EMOTIONS } from '../types';
-import type { Message, EmotionFinding, ExtractionResult, SessionId } from '../types';
+import type { Message, ExtractionResult, SessionId } from '../types';
 import { buildExtractionPrompt } from '../prompts/extraction';
 import { estimateUsd } from '../cost';
+
+const ExtractionOutputSchema = z.object({
+  emotions: z.array(
+    z.object({
+      label: z.enum(NEGATIVE_EMOTIONS),
+      intensity: z.enum(['low', 'mid', 'high']),
+      evidenceQuote: z.string().min(1),
+      sourceMessageId: z.string(),
+      rationale: z.string(),
+    }),
+  ),
+  summary: z.string(),
+});
 
 const reportEmotionsTool = {
   name: 'report_emotions',
@@ -40,7 +54,7 @@ export async function extractEmotions(
   sessionId: SessionId,
   messages: Message[],
 ): Promise<ExtractionResult> {
-  const model = process.env.MODEL_EXTRACT ?? 'claude-haiku-4-5-20251001';
+  const model = process.env.MODEL_EXTRACT ?? DEFAULT_MODEL;
 
   const userMessages = messages.filter((m) => m.role === 'user');
   const transcript = userMessages
@@ -60,13 +74,14 @@ export async function extractEmotions(
     throw new Error('Extraction did not return a tool_use block');
   }
 
-  const raw = toolBlock.input as { emotions: EmotionFinding[]; summary: string };
+  const raw = ExtractionOutputSchema.parse(toolBlock.input);
 
-  // Drop any finding whose evidenceQuote is not a verbatim substring of a user message
-  const userTexts = userMessages.map((m) => m.content);
-  const validEmotions = raw.emotions.filter((e) =>
-    userTexts.some((text) => text.includes(e.evidenceQuote)),
-  );
+  // Drop findings whose evidenceQuote is not verbatim in the specific source message
+  const messageMap = new Map(userMessages.map((m) => [m.id, m.content]));
+  const validEmotions = raw.emotions.filter((e) => {
+    const src = messageMap.get(e.sourceMessageId);
+    return src !== undefined && src.includes(e.evidenceQuote);
+  });
 
   const { input_tokens: inputTokens, output_tokens: outputTokens } = response.usage;
 
@@ -76,6 +91,6 @@ export async function extractEmotions(
     summary: raw.summary,
     extractedAt: Date.now(),
     model,
-    usage: { inputTokens, outputTokens, usdEstimate: estimateUsd(inputTokens, outputTokens) },
+    usage: { inputTokens, outputTokens, usdEstimate: estimateUsd(inputTokens, outputTokens, model) },
   };
 }
