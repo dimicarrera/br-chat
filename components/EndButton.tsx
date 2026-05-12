@@ -1,16 +1,25 @@
 interface Props {
   onClick: () => void;
   disabled: boolean;
+  atLimit: boolean;
 }
 
-export default function EndButton({ onClick, disabled }: Props) {
+export default function EndButton({ onClick, disabled, atLimit }: Props) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className="text-xs font-medium text-zinc-500 hover:text-zinc-900 disabled:opacity-40 transition-colors border border-zinc-200 rounded-lg px-3 py-1.5 hover:border-zinc-400"
+      className={`w-full rounded-xl text-sm font-medium transition-all disabled:opacity-50 px-4 py-[10px] ${
+        atLimit
+          ? 'bg-[linear-gradient(135deg,#6366F1,#4F46E5)] text-white shadow-[0_0_20px_rgba(99,102,241,0.3)]'
+          : 'bg-[rgba(99,102,241,0.1)] text-[#818CF8] border border-[rgba(99,102,241,0.2)]'
+      }`}
     >
-      {disabled ? 'Ending…' : 'End conversation'}
+      {disabled
+        ? 'Generating report…'
+        : atLimit
+        ? 'View wellbeing report →'
+        : 'End check-in & view report'}
     </button>
   );
 }

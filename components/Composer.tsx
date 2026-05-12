@@ -33,9 +33,11 @@ export default function Composer({ onSend, disabled }: Props) {
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   };
 
+  const active = Boolean(value.trim()) && !disabled;
+
   return (
-    <div className="border-t border-zinc-200 px-4 py-3">
-      <div className="flex items-end gap-2 rounded-xl border border-zinc-300 bg-white text-black px-3 py-2 focus-within:border-zinc-500 transition-colors">
+    <div className="px-4 pt-3 pb-3">
+      <div className="flex items-end gap-2.5 rounded-xl px-3.5 py-2.5 bg-[#161B27] border border-[rgba(255,255,255,0.07)]">
         <textarea
           ref={textareaRef}
           name="chatinput"
@@ -44,20 +46,24 @@ export default function Composer({ onSend, disabled }: Props) {
           onKeyDown={onKeyDown}
           onInput={onInput}
           disabled={disabled}
-          placeholder={disabled ? 'Conversation ended' : 'Share something about your day…'}
+          placeholder={disabled ? 'Conversation complete' : 'Share something about your day…'}
           rows={1}
-          className="flex-1 resize-none bg-transparent text-sm outline-none placeholder-zinc-400 disabled:opacity-50"
+          className="flex-1 resize-none bg-transparent text-sm text-[#E2E8F0] caret-[#6366F1] outline-none leading-relaxed placeholder:text-slate-600 disabled:opacity-40"
         />
         <button
           onClick={submit}
           disabled={disabled || !value.trim()}
           aria-label="Send"
-          className="flex-shrink-0 h-7 w-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center disabled:opacity-30 hover:bg-zinc-700 transition-colors"
+          className={`flex-shrink-0 w-[30px] h-[30px] flex items-center justify-center rounded-lg transition-all disabled:opacity-25 ${
+            active
+              ? 'bg-[linear-gradient(135deg,#6366F1,#4F46E5)] shadow-[0_0_12px_rgba(99,102,241,0.4)]'
+              : 'bg-[rgba(99,102,241,0.15)]'
+          }`}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
             <path
               d="M6 1L6 11M6 1L2 5M6 1L10 5"
-              stroke="currentColor"
+              stroke={active ? '#fff' : '#6366F1'}
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -65,7 +71,7 @@ export default function Composer({ onSend, disabled }: Props) {
           </svg>
         </button>
       </div>
-      <p className="text-xs text-zinc-400 mt-1.5 text-center">
+      <p className="mt-1.5 text-center text-[11px] text-[rgba(255,255,255,0.18)]">
         Enter to send · Shift+Enter for new line
       </p>
     </div>
