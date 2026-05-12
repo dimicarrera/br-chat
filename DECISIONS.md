@@ -180,6 +180,4 @@ None at this point.
 ## Future tasks
 
 - Add HTA in prod to drastically limit token overconsumption by attackers.
-- Add pnpm arch script to verify CI on every push
-- Add architectural rules to dependency-cruiser.cjs
 - Run a proper code review

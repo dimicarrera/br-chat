@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "cp .githooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "eval": "tsx evals/run.ts"
+    "eval": "tsx evals/run.ts",
+    "check:deps": "depcruise app components lib --config .dependency-cruiser.cjs --output-type text",
+    "check:knip": "knip",
+    "arch": "knip && depcruise app components lib --config .dependency-cruiser.cjs --output-type text"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.2",
@@ -24,8 +28,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dependency-cruiser": "^17.4.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "knip": "^6.12.2",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

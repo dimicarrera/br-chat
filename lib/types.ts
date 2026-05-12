@@ -1,6 +1,6 @@
 export type SessionId = string;
 
-export type Role = 'user' | 'assistant' | 'system';
+type Role = 'user' | 'assistant' | 'system';
 
 export interface Message {
   id: string;
