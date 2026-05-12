@@ -6,27 +6,19 @@ A conversational app that talks to a user about their day in English and extract
 
 - Node.js 20+
 - pnpm (`npm i -g pnpm`)
-- [Anthropic API key](https://console.anthropic.com/)
-- [Upstash Redis](https://console.upstash.com/) database (free tier is enough — create one, copy the REST URL and token)
 
 ## Local setup
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/dimicarrera/br-chat.git
 cd br-chat
 pnpm install
 cp .env.example .env.local
 ```
 
-Open `.env.local` and fill in the four required secrets:
+You'd need my .env.local contents in order to run the app locally without the need to configure your own keys.
 
-```
-ANTHROPIC_API_KEY=sk-ant-...
-KV_REST_API_URL=https://...upstash.io
-KV_REST_API_TOKEN=...
-```
-
-The remaining variables have sensible defaults (`MODEL_CHAT`, `MODEL_EXTRACT`, `MAX_ASSISTANT_TURNS`, etc.) and don't need to be changed to run locally.
+Then, run the app:
 
 ```bash
 pnpm dev        # starts at http://localhost:3000
@@ -38,7 +30,7 @@ pnpm dev        # starts at http://localhost:3000
 pnpm eval
 ```
 
-Feeds 20+ hand-written transcripts through the same extraction pipeline used in production and reports label-set precision, recall, macro F1, quote-substring accuracy, and mean USD cost per case. Results land in `evals/last-run.json`; headline numbers are kept in `EVALS.md`.
+Feeds 15 hand-written transcripts through the same extraction pipeline used in production and reports label-set precision, recall, macro F1, quote-substring accuracy, and mean USD cost per case. Results land in `evals/last-run.json`.
 
 Run this before and after any change to `lib/prompts/` or `lib/llm/extract.ts`.
 
@@ -50,4 +42,6 @@ See [SA.md](SA.md) for the full architecture and [DECISIONS.md](DECISIONS.md) fo
 
 ## Deployed app
 
-[TODO: add Vercel URL after deployment]
+It's locked behind basic auth.
+
+https://br-chat.vercel.app/
